@@ -1,4 +1,5 @@
-# Knowledge Graph for Car Sensors (kg-car-sensors)
+# Automobile Senors on Knowledge Graphs
+
 
 This repository provides a complete, runnable project to learn about Knowledge Graphs (KGs) using a synthetic-but-realistic dataset of automobile sensors. You will explore the entire pipeline: from data generation and ontology design to querying, visualization, and integration with different graph databases and tools.
 
