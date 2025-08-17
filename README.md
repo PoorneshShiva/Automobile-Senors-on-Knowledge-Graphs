@@ -4,7 +4,7 @@ This repository provides a complete, runnable project to learn about Knowledge G
 
 This project is designed for beginners and uses Python 3.12, RDF/SPARQL, Neo4j, NetworkX, and Plotly.
 
-![Plotly Entity Graph Screenshot](https://raw.githubusercontent.com/google/generative-ai-docs/main/public/images/gemini/kg-car-sensors-screenshot.png)
+![Plotly Entity Graph Screenshot](https://github.com/PoorneshShiva/Automobile-Senors-on-Knowledge-Graphs/main/public/images/graph.png)
 *(An example of the interactive entity graph you will generate.)*
 
 ## What You'll Learn
