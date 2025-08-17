@@ -1,0 +1,20 @@
+@prefix ex: <http://example.com/ontology/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:ECU rdfs:subClassOf ex:Component .
+
+ex:SensorInstance rdfs:label "Sensor Instance" ;
+    rdfs:subClassOf ex:Component .
+
+ex:SensorModel rdfs:label "Sensor Model" ;
+    rdfs:subClassOf ex:Component .
+
+ex:SensorType rdfs:label "Sensor Type" ;
+    rdfs:subClassOf ex:Concept .
+
+ex:Subsystem rdfs:subClassOf ex:Concept .
+
+ex:VehicleModel rdfs:subClassOf ex:Component .
+
+ex:Component rdfs:subClassOf rdfs:Resource .
+

@@ -1,0 +1,137 @@
+# ===================================================================
+# Intermediate SPARQL Queries
+#
+# What you'll learn:
+# - Aggregating results with `GROUP BY`, `COUNT`, and `AVG`.
+# - Using property paths (`/` and `*`) to traverse multiple relationships.
+# - Filtering with `FILTER` and regular expressions (`regex`).
+# - Combining optional and required patterns with `OPTIONAL`.
+#
+# To run from the CLI:
+# python -m kg_sensors.cli sparql queries/sensors_intermediate.sparql
+# ===================================================================
+
+# Query 1: Count the number of sensor models per sensor type
+# This uses GROUP BY and COUNT to provide a summary.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?type_label (COUNT(?sensor_model) AS ?count)
+WHERE {
+  ?sensor_model ex:hasSensorType ?type .
+  ?type rdfs:label ?type_label .
+}
+GROUP BY ?type_label
+ORDER BY DESC(?count)
+
+---
+
+# Query 2: Calculate the average sample rate per sensor type
+# This shows how to use AVG() for numerical aggregation.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?type_label (AVG(?rate) AS ?avg_sample_rate_hz)
+WHERE {
+  ?sensor_model ex:hasSensorType ?type ;
+                ex:sampleRateHz ?rate_literal .
+  ?type rdfs:label ?type_label .
+
+  # Cast the literal to a decimal for calculation
+  BIND(xsd:decimal(?rate_literal) AS ?rate)
+}
+GROUP BY ?type_label
+ORDER BY DESC(?avg_sample_rate_hz)
+
+---
+
+# Query 3: Find sensors compatible with a "Volkswagen Golf"
+# This query finds all sensor models that are explicitly marked as compatible.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX veh: <http://example.com/vehicle/>
+
+SELECT ?sensor_model_label ?manufacturer_label
+WHERE {
+  veh:Golf ex:compatibleWithModel ?sensor_model .
+  ?sensor_model rdfs:label ?sensor_model_label ;
+                ex:manufacturedBy ?mfg .
+  ?mfg rdfs:label ?manufacturer_label .
+}
+
+---
+
+# Query 4: Find sensors connected to ECUs in the "Powertrain" subsystem
+# This uses a property path (`/`) to chain relationships together.
+# The path is: Sensor Instance -> ECU -> Subsystem
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?sensor_instance_label ?ecu_label
+WHERE {
+  ?subsystem rdfs:label "Powertrain Control" .
+
+  ?sensor_instance ex:connectsToECU/ex:partOf ?subsystem .
+
+  # Get labels for reporting
+  ?sensor_instance rdfs:label ?sensor_instance_label ;
+                   ex:connectsToECU ?ecu .
+  ?ecu rdfs:label ?ecu_label .
+}
+
+---
+
+# Query 5: Find the full path from Vehicle to Sensor to ECU to Protocol
+# This query connects multiple entities to give a complete picture of a sensor's context.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?vehicle_label ?sensor_instance_label ?ecu_label ?protocol_label
+WHERE {
+  ?sensor_instance ex:installedInModel ?vehicle ;
+                   ex:connectsToECU ?ecu ;
+                   ex:isInstanceOf ?sensor_model .
+
+  ?sensor_model ex:usesProtocol ?protocol .
+
+  # Get all the labels
+  ?vehicle rdfs:label ?vehicle_label .
+  ?sensor_instance rdfs:label ?sensor_instance_label .
+  ?ecu rdfs:label ?ecu_label .
+  ?protocol rdfs:label ?protocol_label .
+}
+ORDER BY ?vehicle_label ?sensor_instance_label
+
+---
+
+# Query 6: Find sensors with "O2" or "Oxygen" in their label (case-insensitive)
+# This uses a FILTER with a regular expression for flexible text matching.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_model ?label
+WHERE {
+  ?sensor_model a ex:SensorModel ;
+                rdfs:label ?label .
+  FILTER(REGEX(?label, "O2|Oxygen", "i"))
+}
+
+---
+
+# Query 7: List all sensor models and, optionally, their related DTC code
+# This uses OPTIONAL to include information that may not be present for all sensors.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_label ?dtc_label
+WHERE {
+  ?sensor_model a ex:SensorModel ;
+                rdfs:label ?sensor_label .
+
+  OPTIONAL {
+    ?sensor_model ex:relatedDTC ?dtc .
+    ?dtc rdfs:label ?dtc_label .
+  }
+}
+ORDER BY ?sensor_label

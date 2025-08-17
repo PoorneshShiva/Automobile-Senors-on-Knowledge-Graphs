@@ -1,0 +1,109 @@
+# ===================================================================
+# Reasoning-like SPARQL Queries
+#
+# What you'll learn:
+# - How `rdfs:subClassOf` can be used to query for general concepts.
+# - Using property paths to infer relationships that aren't directly stated.
+# - Combining type and property information for powerful filtering.
+#
+# To run from the CLI:
+# python -m kg_sensors.cli sparql queries/reasoning_examples.sparql
+# ===================================================================
+
+# Query 1: Find all components (Sensors, ECUs, etc.)
+# Because SensorModel, SensorInstance, and ECU are all subclasses of ex:Component,
+# this query will return all of them. This is simple inference.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?component ?label (SAMPLE(?type_label) AS ?type)
+WHERE {
+  ?component rdfs:subClassOf* ex:Component ;
+             a ?type ;
+             rdfs:label ?label .
+  ?type rdfs:label ?type_label .
+  # Filter out the base class itself from the results
+  FILTER(?component != ex:Component)
+}
+GROUP BY ?component ?label
+ORDER BY ?type
+
+---
+
+# Query 2: Find all sensors installed in a Toyota vehicle
+# This query doesn't rely on a direct link between a sensor and a manufacturer.
+# Instead, it infers the relationship via the VehicleModel.
+# Path: SensorInstance -> VehicleModel -> Manufacturer
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_label ?vehicle_label
+WHERE {
+  ?manufacturer rdfs:label "Toyota" .
+
+  # The property path `ex:installedInModel/ex:manufacturedBy` finds sensors
+  # installed in models that are, in turn, manufactured by Toyota.
+  ?sensor ex:installedInModel/ex:manufacturedBy ?manufacturer .
+
+  # Get labels for readability
+  ?sensor rdfs:label ?sensor_label ;
+          ex:installedInModel ?vehicle .
+  ?vehicle rdfs:label ?vehicle_label .
+}
+
+---
+
+# Query 3: Find DTCs related to sensors that measure pressure
+# This connects a fault code (DTC) to a sensor's fundamental capability,
+# even though they are not directly linked.
+# Path: DTC <- SensorModel -> SensorType -> MeasurementProperty
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?dtc_code ?dtc_comment ?sensor_model_label
+WHERE {
+  # Find the type of sensor that measures pressure
+  ?pressure_sensor_type ex:measures ex:Pressure .
+
+  # Find sensor models of that type that also have a related DTC
+  ?sensor_model ex:hasSensorType ?pressure_sensor_type ;
+                ex:relatedDTC ?dtc ;
+                rdfs:label ?sensor_model_label .
+
+  # Get the DTC information
+  ?dtc rdfs:label ?dtc_code ;
+       rdfs:comment ?dtc_comment .
+}
+
+---
+
+# Query 4: Get all information about a specific sensor instance
+# This query uses the instance's label to find the URI, then traverses
+# multiple paths to pull in all related data: its model, type, protocol,
+# location, vehicle, and ECU. This simulates how an application would
+# build a "fact sheet" for a component.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT *
+WHERE {
+  # Start from the instance's label
+  ?instance rdfs:label "Camry Wheel Speed Sensor (Front Right)" .
+
+  # Get direct properties
+  ?instance ex:locatedAt/rdfs:label ?location ;
+            ex:installedInModel/rdfs:label ?vehicle ;
+            ex:connectsToECU/rdfs:label ?ecu .
+
+  # Get properties from the sensor's model
+  ?instance ex:isInstanceOf ?model .
+  ?model rdfs:label ?model_label ;
+         ex:usesProtocol/rdfs:label ?protocol ;
+         ex:hasSensorType/rdfs:label ?sensor_type ;
+         ex:sampleRateHz ?sample_rate .
+
+  # Optionally get the DTC
+  OPTIONAL {
+    ?model ex:relatedDTC/rdfs:label ?dtc_code .
+  }
+}

@@ -1,0 +1,237 @@
+@prefix ex: <http://example.com/ontology/> .
+@prefix prot: <http://example.com/protocol/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sen: <http://example.com/sensor/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:Bosch rdfs:label "Bosch" .
+
+ex:Continental rdfs:label "Continental" .
+
+ex:Denso rdfs:label "Denso" .
+
+ex:ECU rdfs:subClassOf ex:Component .
+
+ex:EngineBay rdfs:label "EngineBay" .
+
+ex:Exterior rdfs:label "Exterior" .
+
+ex:Interior rdfs:label "Interior" .
+
+ex:SensorInstance rdfs:label "Sensor Instance" ;
+    rdfs:subClassOf ex:Component .
+
+ex:SensorType rdfs:label "Sensor Type" ;
+    rdfs:subClassOf ex:Concept .
+
+ex:Subsystem rdfs:subClassOf ex:Concept .
+
+ex:Toyota rdfs:label "Toyota" .
+
+ex:VehicleModel rdfs:subClassOf ex:Component .
+
+ex:Volkswagen rdfs:label "Volkswagen" .
+
+ex:Wheel rdfs:label "Wheel" .
+
+prot:FlexRay rdfs:label "FlexRay" ;
+    ex:protocolBandwidthKbps 10000 ;
+    rdfs:comment "A high-speed, deterministic, and fault-tolerant bus system for automotive use." .
+
+sen:AirQualitySensor a ex:SensorModel ;
+    rdfs:label "Air Quality Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:AirbagCrashSensor a ex:SensorModel ;
+    rdfs:label "Airbag Crash Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Safety .
+
+sen:AmbientTemperatureSensor a ex:SensorModel ;
+    rdfs:label "Ambient Temperature Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:BrakePressureSensor a ex:SensorModel ;
+    rdfs:label "Brake Pressure Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:CabinTemperatureSensor a ex:SensorModel ;
+    rdfs:label "Cabin Temperature Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:CameraSensor a ex:SensorModel ;
+    rdfs:label "Camera Sensor" ;
+    ex:hasBusType prot:Ethernet ;
+    ex:partOf ex:Safety .
+
+sen:CamshaftPositionSensor a ex:SensorModel ;
+    rdfs:label "Camshaft Position Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+<http://example.com/sensor/Clutch/BrakePedalPositionSensor> a ex:SensorModel ;
+    rdfs:label "Clutch/Brake Pedal Position Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:CoolantTempSensor a ex:SensorModel ;
+    rdfs:label "Coolant Temp Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:CrankshaftPositionSensor a ex:SensorModel ;
+    rdfs:label "Crankshaft Position Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:DpfPressureSensor a ex:SensorModel ;
+    rdfs:label "DPF Pressure Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Exhaust .
+
+sen:EgtSensor a ex:SensorModel ;
+    rdfs:label "EGT Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Exhaust .
+
+sen:FuelPressureSensor a ex:SensorModel ;
+    rdfs:label "Fuel Pressure Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:HumiditySensor a ex:SensorModel ;
+    rdfs:label "Humidity Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:KnockSensor a ex:SensorModel ;
+    rdfs:label "Knock Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:LateralAccelerationSensor a ex:SensorModel ;
+    rdfs:label "Lateral Acceleration Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:LidarSensor a ex:SensorModel ;
+    rdfs:label "LiDAR Sensor" ;
+    ex:hasBusType prot:Ethernet ;
+    ex:partOf ex:Safety .
+
+sen:MafSensor a ex:SensorModel ;
+    rdfs:label "MAF Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:MapSensor a ex:SensorModel ;
+    rdfs:label "MAP Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:NoxSensor a ex:SensorModel ;
+    rdfs:label "NOx Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Exhaust .
+
+sen:OilPressureSensor a ex:SensorModel ;
+    rdfs:label "Oil Pressure Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:OxygenSensor a ex:SensorModel ;
+    rdfs:label "Oxygen Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:RadarSensor a ex:SensorModel ;
+    rdfs:label "Radar Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Safety .
+
+sen:RainSensor a ex:SensorModel ;
+    rdfs:label "Rain Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:SeatOccupantSensor a ex:SensorModel ;
+    rdfs:label "Seat Occupant Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Safety .
+
+sen:SteeringAngleSensor a ex:SensorModel ;
+    rdfs:label "Steering Angle Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:SunlightSensor a ex:SensorModel ;
+    rdfs:label "Sunlight Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Comfort .
+
+sen:SuspensionHeightSensor a ex:SensorModel ;
+    rdfs:label "Suspension Height Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:ThrottlePositionSensor a ex:SensorModel ;
+    rdfs:label "Throttle Position Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:Tpms a ex:SensorModel ;
+    rdfs:label "TPMS" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:TransmissionSpeedSensor a ex:SensorModel ;
+    rdfs:label "Transmission Speed Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:Powertrain .
+
+sen:UltrasonicSensor a ex:SensorModel ;
+    rdfs:label "Ultrasonic Sensor" ;
+    ex:hasBusType prot:LIN ;
+    ex:partOf ex:Safety .
+
+sen:WheelSpeedSensor a ex:SensorModel ;
+    rdfs:label "Wheel Speed Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+sen:YawRateSensor a ex:SensorModel ;
+    rdfs:label "Yaw Rate Sensor" ;
+    ex:hasBusType prot:CAN ;
+    ex:partOf ex:VehicleDynamics .
+
+prot:Ethernet rdfs:label "Automotive Ethernet" ;
+    ex:protocolBandwidthKbps 100000 ;
+    rdfs:comment "High-bandwidth network for advanced applications." .
+
+ex:Exhaust rdfs:label "Exhaust Systems" .
+
+ex:Component rdfs:subClassOf rdfs:Resource .
+
+ex:Comfort rdfs:label "Comfort Systems" .
+
+ex:Safety rdfs:label "Safety Systems" .
+
+ex:VehicleDynamics rdfs:label "Vehicle Dynamics" .
+
+prot:LIN rdfs:label "LIN Bus" ;
+    ex:protocolBandwidthKbps 20 ;
+    rdfs:comment "Local Interconnect Network, a serial network protocol used for communication between components in vehicles." .
+
+ex:Powertrain rdfs:label "Powertrain Control" .
+
+prot:CAN rdfs:label "CAN Bus" ;
+    ex:protocolBandwidthKbps 1000 ;
+    rdfs:comment "Controller Area Network, a robust vehicle bus standard designed to allow microcontrollers and devices to communicate with each other's applications without a host computer." .
+
+ex:SensorModel rdfs:label "Sensor Model" ;
+    rdfs:subClassOf ex:Component .
+

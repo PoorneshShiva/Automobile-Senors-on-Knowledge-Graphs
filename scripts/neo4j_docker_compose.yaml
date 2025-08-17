@@ -1,0 +1,33 @@
+# Docker Compose file for running Neo4j 5 with APOC and Neosemantics (n10s) plugins.
+#
+# Usage:
+# 1. Navigate to this directory (`scripts/`).
+# 2. Run `docker-compose up -d` to start the container in the background.
+# 3. Access the Neo4j Browser at http://localhost:7474.
+# 4. Use `docker-compose down` to stop and remove the container.
+
+services:
+  neo4j:
+    image: neo4j:5.18.0
+    container_name: kg-car-sensors-neo4j-1
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j_import:/import
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc","n10s"]
+      # Enable n10s HTTP endpoints at /rdf  (Neo4j 5 key is server.unmanaged_extension_classes)
+      - NEO4J_server_unmanaged__extension__classes=n10s.endpoint=/rdf
+      # (Optional) If you use an HTTP allowlist, include /rdf.*. Otherwise omit this.
+      # - NEO4J_dbms_security_http__auth__allowlist=/,/browser.*,/rdf.*
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+# Create a named volume for persistent data (optional, but good practice)
+volumes:
+  neo4j_data:

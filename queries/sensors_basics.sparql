@@ -1,0 +1,105 @@
+# ===================================================================
+# Basic SPARQL Queries
+#
+# What you'll learn:
+# - How to select variables from a graph.
+# - Using `rdfs:label` to get human-readable names.
+# - Filtering results with a basic `WHERE` clause.
+# - Finding all instances of a certain type (`rdf:type`).
+#
+# To run from the CLI:
+# python -m kg_sensors.cli sparql queries/sensors_basics.sparql
+# ===================================================================
+
+# Query 1: List all available sensor types
+# This query finds anything that is a `ex:SensorType` and gets its label.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_type ?label
+WHERE {
+  ?sensor_type a ex:SensorType ;
+               rdfs:label ?label .
+}
+ORDER BY ?label
+
+---
+
+# Query 2: Find all sensors that measure temperature
+# This shows how to follow a relationship (`ex:hasSensorType` and `ex:measures`)
+# to find sensors with a specific capability.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_model ?label
+WHERE {
+  # Find the sensor type for temperature measurement
+  ?temp_type ex:measures ex:Temperature .
+
+  # Find sensor models of that type
+  ?sensor_model ex:hasSensorType ?temp_type ;
+                rdfs:label ?label .
+}
+
+---
+
+# Query 3: List all sensor instances located at a "Wheel"
+# This query finds physical sensor instances and filters them by their location.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_instance ?label ?vehicle
+WHERE {
+  ?location rdfs:label "Wheel" . # Find the location URI by its label
+
+  ?sensor_instance ex:locatedAt ?location ;
+                   rdfs:label ?label ;
+                   ex:installedInModel ?vehicle_model .
+  ?vehicle_model rdfs:label ?vehicle .
+}
+
+---
+
+# Query 4: List all sensor models and their communication protocol
+# A simple join to show which protocol each sensor model uses.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?sensor_model_label ?protocol_label
+WHERE {
+  ?sensor_model a ex:SensorModel ;
+                rdfs:label ?sensor_model_label ;
+                ex:usesProtocol ?protocol .
+  ?protocol rdfs:label ?protocol_label .
+}
+ORDER BY ?protocol_label
+
+---
+
+# Query 5: List all vehicle models and their manufacturers
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?vehicle_label ?manufacturer_label
+WHERE {
+  ?vehicle a ex:VehicleModel ;
+           rdfs:label ?vehicle_label ;
+           ex:manufacturedBy ?manufacturer .
+  ?manufacturer rdfs:label ?manufacturer_label .
+}
+ORDER BY ?manufacturer_label
+
+---
+
+# Query 6: Find all sensor instances installed in a "Toyota Camry"
+# This demonstrates how to start from a known entity and discover its parts.
+PREFIX ex: <http://example.com/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX veh: <http://example.com/vehicle/>
+
+SELECT ?sensor_instance ?sensor_label
+WHERE {
+  veh:Camry rdfs:label "Toyota Camry" . # This just establishes context, not strictly needed
+  ?sensor_instance ex:installedInModel veh:Camry ;
+                   rdfs:label ?sensor_label .
+}
